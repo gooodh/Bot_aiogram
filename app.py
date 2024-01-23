@@ -22,7 +22,7 @@ async def start_cmd(message):
 @dp.message()
 async def welcome_message(message):
     text = message.text.lower()
-    if text in ['привет', 'здрвавствуйте', 'hello', 'hi']:
+    if text in ['привет', 'здравствуйте', 'hello', 'hi']:
         await message.answer('Hello!')
     elif text in ['пока', 'досвидания', 'while']:
         await message.answer('Пока!')
