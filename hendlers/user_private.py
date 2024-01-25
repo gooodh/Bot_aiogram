@@ -2,6 +2,7 @@ from aiogram import F, Router, types
 from aiogram.filters import CommandStart, Command, or_f
 
 from filters.chat_types import ChatTypeFilter
+from kbds import replay
 
 user_private_router = Router()
 user_private_router.message.filter(ChatTypeFilter(['private']))
@@ -9,12 +10,12 @@ user_private_router.message.filter(ChatTypeFilter(['private']))
 
 @user_private_router.message(CommandStart())
 async def start_cmd(message):
-    await message.answer('Start')
+    await message.answer('Start', reply_markup=replay.start_kb)
 
 
 @user_private_router.message(or_f(Command("menu"), (F.text.lower() == "меню")))
 async def menu_cmd(message: types.Message):
-    await message.answer("Вот меню:")
+    await message.answer("Вот меню 🍕:", reply_markup=replay.del_kbd)
 
 
 @user_private_router.message(F.text.lower() == "о нас")
@@ -34,6 +35,18 @@ async def payment_cmd(message: types.Message):
 @user_private_router.message(Command("shipping"))
 async def shipping_cmd(message: types.Message):
     await message.answer("Варианты доставки:")
+
+# @user_private_router.message(F.text.lower() == "tel")
+# @user_private_router.message(F.contact)
+# async def get_contact(message: types.Message):
+#     await message.answer(f"номер получен", reply_markup=replay.test_kb)
+#     await message.answer(str(message.contact))
+
+
+# @user_private_router.message(F.location)
+# async def get_location(message: types.Message):
+#     await message.answer(f"локация получена")
+#     await message.answer(str(message.location))
 
 
 
