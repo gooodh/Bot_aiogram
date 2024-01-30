@@ -5,6 +5,7 @@ from aiogram.enums import ParseMode
 
 from hendlers.user_private import user_private_router
 from hendlers.user_group import user_group_router
+from hendlers.admin_private import admin_router
 from config import token, ALLOWED_UPDATES
 from common.bot_cmds_list import private
 
@@ -14,6 +15,7 @@ dp = Dispatcher()
 
 dp.include_router(user_private_router)
 dp.include_router(user_group_router)
+dp.include_router(admin_router)
 
 
 async def main():

@@ -1,25 +1,41 @@
-from aiogram import F, Router, types
+from aiogram import F, types, Router
+from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart, Command, or_f
-from aiogram.utils.formatting import as_list, as_marked_section, Bold
+from aiogram.utils.formatting import (
+    as_list,
+    as_marked_section,
+    Bold,
+)  # Italic, as_numbered_list и тд
 
 from filters.chat_types import ChatTypeFilter
-from kbds import replay
+from kbds.replay import get_keyboard
 
 user_private_router = Router()
-user_private_router.message.filter(ChatTypeFilter(['private']))
+user_private_router.message.filter(ChatTypeFilter(["private"]))
 
 
 @user_private_router.message(CommandStart())
-async def start_cmd(message):
-    await message.answer('Start', reply_markup=replay.start_kb)
+async def start_cmd(message: types.Message):
+    await message.answer(
+        "Привет, я виртуальный помощник",
+        reply_markup=get_keyboard(
+            "Меню",
+            "О магазине",
+            "Варианты оплаты",
+            "Варианты доставки",
+            placeholder="Что вас интересует?",
+            sizes=(2, 2)
+        ),
+    )
 
 
+# @user_private_router.message(F.text.lower() == "меню")
 @user_private_router.message(or_f(Command("menu"), (F.text.lower() == "меню")))
 async def menu_cmd(message: types.Message):
-    await message.answer("Вот меню 🍕:")
+    await message.answer("Вот меню:")
 
 
-@user_private_router.message(F.text.lower() == "о нас")
+@user_private_router.message(F.text.lower() == "о магазине")
 @user_private_router.message(Command("about"))
 async def about_cmd(message: types.Message):
     await message.answer("О нас:")
@@ -29,44 +45,41 @@ async def about_cmd(message: types.Message):
 @user_private_router.message(Command("payment"))
 async def payment_cmd(message: types.Message):
     text = as_marked_section(
-            Bold("Варианты оплаты:"),
-            "Картой в боте",
-            "При получении карта/кеш",
-            "В заведении",
-            marker='✅ '
-        )
-
+        Bold("Варианты оплаты:"),
+        "Картой в боте",
+        "При получении карта/кеш",
+        "В заведении",
+        marker="✅ ",
+    )
     await message.answer(text.as_html())
-    # await message.answer("Варианты оплаты:")
 
 
-# @user_private_router.message((F.text.lower().contains('доставк')) | (F.text.lower() == 'варианты доставки'))
-@user_private_router.message(F.text.lower().contains('доставк'))
+@user_private_router.message(
+    (F.text.lower().contains("доставк")) | (F.text.lower() == "варианты доставки"))
 @user_private_router.message(Command("shipping"))
-async def shipping_cmd(message: types.Message):
+async def menu_cmd(message: types.Message):
     text = as_list(
         as_marked_section(
             Bold("Варианты доставки/заказа:"),
             "Курьер",
             "Самовынос (сейчас прибегу заберу)",
             "Покушаю у Вас (сейчас прибегу)",
-            marker='✅ '
+            marker="✅ ",
         ),
         as_marked_section(
             Bold("Нельзя:"),
             "Почта",
             "Голуби",
-            marker='❌ '
+            marker="❌ "
         ),
-        sep='\n----------------------\n'
+        sep="\n----------------------\n",
     )
     await message.answer(text.as_html())
-    # await message.answer("Варианты доставки:")
 
-# @user_private_router.message(F.text.lower() == "tel")
+
 # @user_private_router.message(F.contact)
 # async def get_contact(message: types.Message):
-#     await message.answer(f"номер получен", reply_markup=replay.test_kb)
+#     await message.answer(f"номер получен")
 #     await message.answer(str(message.contact))
 
 
@@ -74,20 +87,3 @@ async def shipping_cmd(message: types.Message):
 # async def get_location(message: types.Message):
 #     await message.answer(f"локация получена")
 #     await message.answer(str(message.location))
-
-
-
-# @user_private_router.message()
-# async def echo(message):
-#     await message.answer(message.text)
-
-
-# @user_private_router.message()
-# async def welcome_message(message):
-#     text = message.text.lower()
-#     if text in ['привет', 'здравствуйте', 'hello', 'hi']:
-#         await message.answer('Hello!')
-#     elif text in ['пока', 'досвидания', 'while']:
-#         await message.answer('Пока!')
-#     else:
-#         await message.answer(message.text)
