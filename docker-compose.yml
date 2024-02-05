@@ -1,0 +1,24 @@
+version: '3.9'
+
+services:
+    bot:
+        restart: always
+        build: .
+        container_name: "bot"
+        command: bash entrypoint.sh
+        # depends_on:
+        # - db_bot
+        env_file:
+            - .env
+    db_bot:
+        restart: always
+        image: postgres:15
+        container_name: "POSTGRES_DB"
+        volumes:
+        - pg_bot:/var/lib/postgresql/data/
+
+        env_file:
+        - .env
+
+volumes:
+    pg_bot:
