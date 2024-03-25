@@ -1,8 +1,11 @@
 from aiogram import F, Router, types
-from aiogram.filters import Command, StateFilter
+from aiogram.filters import Command, StateFilter, or_f
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from database.orm_query import orm_add_product
 from filters.chat_types import ChatTypeFilter, IsAdmin
 from kbds.replay import get_keyboard
 
@@ -124,10 +127,17 @@ async def add_price(message: types.Message, state: FSMContext):
     await state.set_state(AddProduct.image)
 
 
-@admin_router.message(AddProduct.image, F.photo)
-async def add_image(message: types.Message, state: FSMContext):
+@admin_router.message(AddProduct.image, or_f(F.photo, F.text == "."))
+async def add_image(message: types.Message, state: FSMContext, session: AsyncSession):
     await state.update_data(image=message.photo[-1].file_id)
-    await message.answer("Товар добавлен", reply_markup=ADMIN_KB)
     data = await state.get_data()
-    await message.answer(str(data))
-    await state.clear()
+    try:
+        await orm_add_product(session, data)
+        await message.answer("Товар добавлен", reply_markup=ADMIN_KB)
+        await state.clear()
+    except Exception as e:
+        await message.answer(
+             f"Ошибка: \n{str(e)}\nОбратись к программеру, он опять денег хочет",
+            reply_markup=ADMIN_KB,
+        )
+        await state.clear()
