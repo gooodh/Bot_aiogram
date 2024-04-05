@@ -21,4 +21,4 @@ db_lite = os.getenv('DB_LITE')
 
 # pingvin_chat_id = os.getenv('pingvin_chat_id')
 
-ALLOWED_UPDATES = ['message, edited_message']
+# ALLOWED_UPDATES = ['message, edited_message']  испоьзовать если в app.py  allowed_updates=ALLOWED_UPDATES а не dp.resolve_used_update_types()
