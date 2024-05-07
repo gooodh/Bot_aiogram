@@ -15,7 +15,7 @@ postgres_db = os.getenv('POSTGRES_DB')
 
 
 db_lite = os.getenv('DB_LITE')
-
+DB_URL = os.getenv('DB_URL')
 
 
 
