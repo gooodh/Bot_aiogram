@@ -8,7 +8,7 @@ from hendlers.user_group import user_group_router
 from hendlers.admin_private import admin_router
 from config import token
 from database.engine import create_db, drop_db, session_maker
-from common.bot_cmds_list import private
+# from common.bot_cmds_list import private
 from middlewares.db import DataBaseSession
 
 bot = Bot(token, parse_mode=ParseMode.HTML)
@@ -21,9 +21,7 @@ dp.include_router(admin_router)
 
 
 async def on_startup(bot):
-    run_param = False
-    if run_param:
-        await drop_db()
+    # await drop_db()
     await create_db()
 
 
@@ -36,11 +34,12 @@ async def main():
     dp.shutdown.register(on_shutdown)
     dp.update.middleware(DataBaseSession(session_pool=session_maker))
 
-    await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
     # await bot.delete_my_commands(scope=types.BotCommandScopeAllPrivateChats())
 
-    await bot.set_my_commands(
-        commands=private, scope=types.BotCommandScopeAllPrivateChats())
+    await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
+
+    # await bot.set_my_commands(
+    #     commands=private, scope=types.BotCommandScopeAllPrivateChats())
 
 
 asyncio.run(main())
